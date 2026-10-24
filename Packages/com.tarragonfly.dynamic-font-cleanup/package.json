@@ -1,0 +1,27 @@
+{
+  "name": "com.tarragonfly.dynamic-font-cleanup",
+  "version": "1.0.0",
+  "displayName": "Tarragon.Fly() Dynamic Font Cleanup",
+  "description": "Clears the generated glyphs and atlas out of dynamic TextMeshPro and TextCore (UI Toolkit) font assets every time Unity saves them, so they stop showing up as changed in version control. Editor only, nothing to set up.",
+  "unity": "6000.0",
+  "dependencies": {
+    "com.unity.ugui": "2.0.0"
+  },
+  "keywords": [
+    "textmeshpro",
+    "tmp",
+    "textcore",
+    "ui toolkit",
+    "font",
+    "dynamic font",
+    "version control"
+  ],
+  "documentationUrl": "https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/blob/main/Packages/com.tarragonfly.dynamic-font-cleanup/README.md",
+  "changelogUrl": "https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/blob/main/Packages/com.tarragonfly.dynamic-font-cleanup/CHANGELOG.md",
+  "licensesUrl": "https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/blob/main/Packages/com.tarragonfly.dynamic-font-cleanup/LICENSE.md",
+  "license": "MIT",
+  "author": {
+    "name": "Tarragon.Fly()",
+    "url": "https://github.com/tarragonfly"
+  }
+}
