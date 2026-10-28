@@ -20,6 +20,12 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "6000.7.0b6",
+            "define": "TEXTCORE_DYNAMIC_DATA_PERSISTENCE"
+        }
+    ],
     "noEngineReferences": false
 }
