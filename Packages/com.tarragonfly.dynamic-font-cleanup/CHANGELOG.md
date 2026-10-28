@@ -4,7 +4,7 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] - 2026-10-28
 
 ### Changed
 
@@ -35,5 +35,5 @@ All notable changes to this package are listed here. The format follows
   open UI Toolkit panels don't keep clearing and refilling the font.
 - On Unity 6.7, TextCore fonts are left to Unity's own save cleanup.
 
-[Unreleased]: https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/compare/v1.0.0...HEAD
+[1.0.1]: https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/releases/tag/v1.0.0

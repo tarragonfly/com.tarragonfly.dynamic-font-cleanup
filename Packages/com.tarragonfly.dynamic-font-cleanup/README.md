@@ -26,7 +26,7 @@ In the Package Manager, pick **Install package from git URL** and paste this, ke
 after the `#`:
 
 ```
-https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.0
+https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.1
 ```
 
 Or add it to `Packages/manifest.json`:
@@ -34,7 +34,7 @@ Or add it to `Packages/manifest.json`:
 ```json
 {
   "dependencies": {
-    "com.tarragonfly.dynamic-font-cleanup": "https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.0"
+    "com.tarragonfly.dynamic-font-cleanup": "https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.1"
   }
 }
 ```

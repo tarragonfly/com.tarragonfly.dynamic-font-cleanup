@@ -10,7 +10,7 @@ by itself (per font, with **Dynamic Data Persistence**), and the package only ha
 Install it in a game from the Package Manager with this git URL, keeping a release tag after the `#`:
 
 ```
-https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.0
+https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup.git?path=Packages/com.tarragonfly.dynamic-font-cleanup#v1.0.1
 ```
 
 The rest of this repository is an empty Unity 6000.0 project, set up so the package stays embedded
