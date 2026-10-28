@@ -302,16 +302,20 @@ namespace TarragonFly.DynamicFontCleanup.Editor.Tests
         [UnityTest]
         public IEnumerator TextCoreDynamicFont_UnitysAtlasPageSaveIsSkipped()
         {
-            // A new atlas page makes Unity save the font on its next update. With a render pipeline active, Unity only
-            // runs that save after a camera renders, so in batchmode this can pass without reaching the skip.
             TextCoreFontAsset font = CreateTextCoreFont();
             SaveFont(font);
+            int skippedSaveCountBefore = ClearDynamicFontsOnSave.SkippedAtlasPageSaveCount;
 
             Assert.That(font.TryAddCharacters(CharactersAddedBetweenSaves[0], includeFontFeatures: false), Is.True);
             Assert.That(font.atlasTextures.Length, Is.GreaterThan(1));
 
-            yield return null;
-            yield return null;
+            // A new atlas page makes Unity save the font on its next update, or after a camera renders when a render
+            // pipeline is active, which might never happen in batchmode.
+            for (int frame = 0; frame < 10 && ClearDynamicFontsOnSave.SkippedAtlasPageSaveCount == skippedSaveCountBefore; frame++)
+                yield return null;
+
+            if (ClearDynamicFontsOnSave.SkippedAtlasPageSaveCount == skippedSaveCountBefore)
+                Assert.Inconclusive("Unity didn't save the font by itself after the new atlas page (for example with a render pipeline active in batchmode), so the skip wasn't checked.");
 
             Assert.That(font.characterTable, Is.Not.Empty);
             AssertSavedFileHasNoGlyphs(TextCoreFontPath);

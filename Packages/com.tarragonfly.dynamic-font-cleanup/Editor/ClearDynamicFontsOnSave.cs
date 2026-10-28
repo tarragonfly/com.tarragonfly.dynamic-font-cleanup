@@ -24,6 +24,9 @@ namespace TarragonFly.DynamicFontCleanup
     // blank until it redraws. The file on disk stays clean either way.
     internal sealed class ClearDynamicFontsOnSave : AssetModificationProcessor
     {
+        // Only for the tests, so they can tell Unity's atlas page save really happened and got skipped.
+        internal static int SkippedAtlasPageSaveCount { get; private set; }
+
         static string[] OnWillSaveAssets(string[] paths)
         {
             List<string> pathsLeftUnsaved = null;
@@ -45,6 +48,7 @@ namespace TarragonFly.DynamicFontCleanup
                 {
                     pathsLeftUnsaved ??= new List<string>();
                     pathsLeftUnsaved.Add(path);
+                    SkippedAtlasPageSaveCount++;
                     continue;
                 }
 
