@@ -4,8 +4,9 @@ Dynamic font assets save the glyphs and atlas they generate at runtime into the 
 their settings. So every play session leaves a big diff on the font, and if two people play the game
 before committing, they get merge conflicts on it.
 
-This package clears that generated data right before Unity writes a dynamic font asset to disk. The
-file in version control only ever holds the font's settings. It covers:
+This package clears that generated data during Unity's `OnWillSaveAssets` callback, so supported saves
+keep the font's settings without its generated glyphs and atlas pages. It handles standalone `.asset`
+files whose main asset is one of these font types:
 
 - TextMeshPro font assets (`TMP_FontAsset`), used by uGUI and world-space TMP text.
 - TextCore font assets (`UnityEngine.TextCore.Text.FontAsset`), used by UI Toolkit.
@@ -14,9 +15,10 @@ Fonts set to **Dynamic** or **Dynamic OS** with **Clear Dynamic Data On Build** 
 same fonts Unity's own build and quit cleanup picks. **Static** fonts and fonts with that box unticked are
 left alone.
 
-Supports Unity 6.0 to 6.7. Editor only, nothing ends up in builds. From Unity 6.7, Unity clears TextCore
-fonts on save by itself (per font, with **Dynamic Data Persistence**), so there the package only handles TMP
-fonts. 6.7 support is based on Unity's 6.7 beta source and hasn't been tested in a 6.7 editor yet.
+Supports Unity 6.0 to 6.7. Editor only, nothing ends up in builds. From Unity 6000.7.0b6, Unity clears
+TextCore fonts on save by itself (per font, with **Dynamic Data Persistence**), so there the package only
+handles TMP fonts. The EditMode tests pass on 6000.0.82f1, 6000.6.7f1 and 6000.7.0b6. 6.7 support goes by
+the 6.7 beta, so it still needs a check on the final 6.7 release.
 
 ## Install
 
@@ -45,16 +47,26 @@ To run the package's tests from your game's Test Runner, also add it to `testabl
 }
 ```
 
-The tests make their own font assets in `Assets/DynamicFontCleanupTests` from the LiberationSans copy in
-`Tests/Editor/Fonts` (OFL licensed, the same font TMP's essentials use) and delete the folder when
-they're done.
+The tests make their own font assets in a new `Assets/DynamicFontCleanupTests` folder from the
+LiberationSans copy in `Tests/Editor/Fonts` (OFL licensed, the same font TMP's essentials use). Unity
+adds a number to the folder name if a folder by that name already exists, and each test deletes only the
+folder it created. If a test run gets killed before it cleans up, the next run deletes the leftover
+`Assets/DynamicFontCleanupTests` folder, as long as it holds nothing but the test fonts.
 
 ## Good to know
 
+- Fonts stored as sub-assets are outside this package's scope. Creating or importing a font can also
+  write generated data without running the save callback, and Unity only saves fonts that have unsaved
+  changes, so a font like that stays as it is when you save. Change any setting on it and change it back,
+  then save it before committing.
+- Custom tools that write assets without invoking `OnWillSaveAssets` bypass cleanup. Unity documents
+  `SaveAssetIfDirty` as bypassing that callback, although the package's tests save that way and see it
+  running on the versions above. Check the behavior on the Editor version your tools use.
 - Unity's own **Clear Dynamic Data On Build** cleanup only runs when you make a build or close the
   Editor, so before 6.7 the font file still changes on every save. This package handles the saves.
-- Fonts made with older TMP versions often have **Clear Dynamic Data On Build** unticked, so tick it on
-  any dynamic font you want kept clean.
+- Fonts made with older TMP versions often have **Clear Dynamic Data On Build** unticked, and on Unity 6.0
+  every new TextCore (UI Toolkit) font starts with it unticked too. Tick it on any dynamic font you want
+  kept clean.
 - Filling a dynamic font with characters on purpose so they're ready at startup, or hand-tuning its
   kerning? Untick **Clear Dynamic Data On Build** on that font. Saving clears the kerning tables too,
   since play sessions add kerning pairs to them as well.

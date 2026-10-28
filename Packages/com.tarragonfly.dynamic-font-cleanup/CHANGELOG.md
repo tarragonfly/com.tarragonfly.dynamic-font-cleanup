@@ -4,6 +4,21 @@ All notable changes to this package are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Documented the standalone-font scope and save paths that can bypass cleanup.
+- Tests check repeated saves after generating extra atlas pages and kerning, including unchanged font
+  files and metadata, missing TextCore source fonts, and Unity 6.7's persistence setting.
+
+### Fixed
+
+- On Unity 6.7 betas before 6000.7.0b6, which don't clear TextCore fonts on save yet, TextCore fonts are
+  cleared again and the tests compile.
+- Tests create a new folder for each test, so an existing folder and its contents are left alone. A folder
+  left behind by a killed test run gets deleted on the next run if it only holds the test fonts.
+
 ## [1.0.0] - 2026-10-24
 
 ### Added
@@ -18,4 +33,5 @@ All notable changes to this package are listed here. The format follows
   open UI Toolkit panels don't keep clearing and refilling the font.
 - On Unity 6.7, TextCore fonts are left to Unity's own save cleanup.
 
+[Unreleased]: https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/tarragonfly/com.tarragonfly.dynamic-font-cleanup/releases/tag/v1.0.0

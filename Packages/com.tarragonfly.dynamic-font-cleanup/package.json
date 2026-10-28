@@ -2,7 +2,7 @@
   "name": "com.tarragonfly.dynamic-font-cleanup",
   "version": "1.0.0",
   "displayName": "Tarragon.Fly() Dynamic Font Cleanup",
-  "description": "Clears the generated glyphs and atlas out of dynamic TextMeshPro and TextCore (UI Toolkit) font assets every time Unity saves them, so they stop showing up as changed in version control. Editor only, nothing to set up.",
+  "description": "Clears generated glyphs and atlas data from standalone dynamic TextMeshPro and TextCore (UI Toolkit) font assets during Unity's save callback, reducing version control diffs. Requires Clear Dynamic Data On Build. Editor only; Unity 6.7 handles TextCore persistence itself.",
   "unity": "6000.0",
   "dependencies": {
     "com.unity.ugui": "2.0.0"
