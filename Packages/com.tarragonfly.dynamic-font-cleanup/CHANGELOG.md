@@ -9,13 +9,15 @@ All notable changes to this package are listed here. The format follows
 ### Changed
 
 - Documented the standalone-font scope and save paths that can bypass cleanup.
-- Tests check repeated saves after generating extra atlas pages and kerning, including unchanged font
-  files and metadata, missing TextCore source fonts, and Unity 6.7's persistence setting.
 
 ### Fixed
 
 - On Unity 6.7 betas before 6000.7.0b6, which don't clear TextCore fonts on save yet, TextCore fonts are
   cleared again and the tests compile.
+- On Unity 7000.0 alphas before 7000.0.0a7, which don't clear TextCore fonts on save yet either, TextCore
+  fonts are cleared again.
+- A dynamic font that lost its reference to its source font file, while the file is still in the project,
+  is now cleared instead of kept with a "source font is missing" warning.
 - Tests create a new folder for each test, so an existing folder and its contents are left alone. A folder
   left behind by a killed test run gets deleted on the next run if it only holds the test fonts.
 

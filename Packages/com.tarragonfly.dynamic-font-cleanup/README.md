@@ -15,10 +15,10 @@ Fonts set to **Dynamic** or **Dynamic OS** with **Clear Dynamic Data On Build** 
 same fonts Unity's own build and quit cleanup picks. **Static** fonts and fonts with that box unticked are
 left alone.
 
-Supports Unity 6.0 to 6.7. Editor only, nothing ends up in builds. From Unity 6000.7.0b6, Unity clears
-TextCore fonts on save by itself (per font, with **Dynamic Data Persistence**), so there the package only
-handles TMP fonts. The EditMode tests pass on 6000.0.82f1, 6000.6.7f1 and 6000.7.0b6. 6.7 support goes by
-the 6.7 beta, so it still needs a check on the final 6.7 release.
+Supports Unity 6.0 to 6.7. Editor only, nothing ends up in builds. From Unity 6000.7.0b6 and 7000.0.0a7,
+Unity clears TextCore fonts on save by itself (per font, with **Dynamic Data Persistence**), so there the
+package only handles TMP fonts. The EditMode tests pass on 6000.0.82f1, 6000.6.7f1 and 6000.7.0b6.
+6.7 support goes by the 6.7 beta, so it still needs a check on the final 6.7 release.
 
 ## Install
 
@@ -70,8 +70,9 @@ folder it created. If a test run gets killed before it cleans up, the next run d
 - Filling a dynamic font with characters on purpose so they're ready at startup, or hand-tuning its
   kerning? Untick **Clear Dynamic Data On Build** on that font. Saving clears the kerning tables too,
   since play sessions add kerning pairs to them as well.
-- A dynamic font whose source font file is missing is skipped with a warning, because its glyphs
-  couldn't be made again.
+- A dynamic font whose source font file is gone from the project is skipped with a warning, because its
+  glyphs couldn't be made again. A font that only lost its reference to the file still gets cleared, since
+  it finds the file again by its GUID.
 - TMP text open in a scene adds its glyphs back right after a save, so a font can show as modified again
   in the Editor. UI Toolkit text only rebuilds when Live Reload is on for its panel, otherwise it can
   show blank until it redraws. The file on disk stays clean either way, and the next save clears it again.

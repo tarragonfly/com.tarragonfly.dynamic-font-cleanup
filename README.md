@@ -2,8 +2,8 @@
 
 Clears generated glyphs and atlas data from standalone dynamic TextMeshPro and TextCore (UI Toolkit)
 font assets during Unity's save callback, reducing version control diffs. Fonts need
-**Clear Dynamic Data On Build** enabled. From Unity 6000.7.0b6, Unity clears TextCore fonts by itself
-(per font, with **Dynamic Data Persistence**), and the package only handles TMP fonts. The package itself is
+**Clear Dynamic Data On Build** enabled. From Unity 6000.7.0b6 and 7000.0.0a7, Unity clears TextCore fonts
+by itself (per font, with **Dynamic Data Persistence**), and the package only handles TMP fonts. The package itself is
 `Packages/com.tarragonfly.dynamic-font-cleanup`, and its
 [README](Packages/com.tarragonfly.dynamic-font-cleanup/README.md) has the details.
 
