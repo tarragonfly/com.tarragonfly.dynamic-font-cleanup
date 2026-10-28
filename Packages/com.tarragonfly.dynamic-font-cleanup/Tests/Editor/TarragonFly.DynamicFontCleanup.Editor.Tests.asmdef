@@ -23,7 +23,12 @@
     "versionDefines": [
         {
             "name": "Unity",
-            "expression": "6000.7.0b6",
+            "expression": "[6000.7.0b6,7000.0.0a1)",
+            "define": "TEXTCORE_DYNAMIC_DATA_PERSISTENCE"
+        },
+        {
+            "name": "Unity",
+            "expression": "7000.0.0a7",
             "define": "TEXTCORE_DYNAMIC_DATA_PERSISTENCE"
         }
     ],
