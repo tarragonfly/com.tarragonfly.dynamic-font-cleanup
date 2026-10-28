@@ -32,5 +32,5 @@ crashlytics-build.properties
 /TestResults*.xml
 
 # Left behind if a test run gets killed before its TearDown.
-/Assets/DynamicFontCleanupTests/
-/Assets/DynamicFontCleanupTests.meta
+/Assets/DynamicFontCleanupTests*/
+/Assets/DynamicFontCleanupTests*.meta
