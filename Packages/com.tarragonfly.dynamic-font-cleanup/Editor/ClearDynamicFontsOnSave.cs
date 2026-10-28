@@ -105,12 +105,26 @@ namespace TarragonFly.DynamicFontCleanup
 
         // Dynamic OS fonts read their glyphs from the fonts installed on the machine and never have a source font file,
         // so they always get cleared, same as in Unity's own cleanup.
-        static bool IsMissingSourceFont(Object fontAsset) => fontAsset switch
+        static bool IsMissingSourceFont(Object fontAsset)
         {
-            TMP_FontAsset tmpFont => tmpFont.atlasPopulationMode == AtlasPopulationMode.Dynamic && tmpFont.sourceFontFile == null,
-            TextCoreFontAsset textCoreFont => textCoreFont.atlasPopulationMode == TextCoreAtlasPopulationMode.Dynamic && textCoreFont.sourceFontFile == null,
-            _ => false,
-        };
+            bool needsSourceFontLookup = fontAsset switch
+            {
+                TMP_FontAsset tmpFont => tmpFont.atlasPopulationMode == AtlasPopulationMode.Dynamic && tmpFont.sourceFontFile == null,
+                TextCoreFontAsset textCoreFont => textCoreFont.atlasPopulationMode == TextCoreAtlasPopulationMode.Dynamic && textCoreFont.sourceFontFile == null,
+                _ => false,
+            };
+            if (!needsSourceFontLookup)
+                return false;
+
+            // With the reference empty, both font types load the source font again from this GUID the next time they
+            // need a glyph, so the font is only really missing when the GUID doesn't lead to a font anymore.
+            using SerializedObject serializedFont = new SerializedObject(fontAsset);
+            string sourceFontGuid = serializedFont.FindProperty("m_SourceFontFileGUID")?.stringValue;
+            if (string.IsNullOrEmpty(sourceFontGuid))
+                return true;
+
+            return AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(sourceFontGuid)) == null;
+        }
 
         // Unity 6.5 and 6.6 save a TextCore font by themselves whenever it gets a new atlas page. Clearing it in that save
         // makes the open UI fill it again, which adds the page again and saves again, every few frames. Those saves are
