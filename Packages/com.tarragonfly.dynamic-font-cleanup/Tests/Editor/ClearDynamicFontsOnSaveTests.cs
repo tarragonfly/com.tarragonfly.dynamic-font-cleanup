@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using TMPro;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TextCore.LowLevel;
 using Object = UnityEngine.Object;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using TextCoreAtlasPopulationMode = UnityEngine.TextCore.Text.AtlasPopulationMode;
 using TextCoreFontAsset = UnityEngine.TextCore.Text.FontAsset;
 #if TEXTCORE_DYNAMIC_DATA_PERSISTENCE
@@ -195,6 +198,33 @@ namespace TarragonFly.DynamicFontCleanup.Editor.Tests
             Assert.That(font.characterTable, Is.Not.Empty);
         }
 
+        [Test]
+        public void TmpDynamicFont_ClearsWhenSourceFontCanStillBeFound()
+        {
+            TMP_FontAsset font = CreateTmpFont();
+            ClearSourceFontReference(font);
+            Assert.That(font.sourceFontFile, Is.Null);
+
+            List<string> warnings = SaveFontCollectingWarnings(font);
+
+            Assert.That(warnings, Is.Empty);
+            Assert.That(font.characterTable, Is.Empty);
+            AssertSavedFileHasNoGlyphs(TmpFontPath);
+        }
+
+        [Test]
+        public void TmpDynamicFont_SaveAssetsLeavesNoGlyphs()
+        {
+            IgnoreUnlessPackageIsEmbedded();
+            TMP_FontAsset font = CreateTmpFont();
+
+            EditorUtility.SetDirty(font);
+            AssetDatabase.SaveAssets();
+
+            Assert.That(font.characterTable, Is.Empty);
+            AssertSavedFileHasNoGlyphs(TmpFontPath);
+        }
+
 #if !TEXTCORE_DYNAMIC_DATA_PERSISTENCE
         [Test]
         public void TextCoreDynamicFont_SavedFileHasNoGlyphs()
@@ -279,6 +309,33 @@ namespace TarragonFly.DynamicFontCleanup.Editor.Tests
 
             Assert.That(font.characterTable, Is.Not.Empty);
             AssertSavedFileHasGlyphs(TextCoreFontPath);
+        }
+
+        [Test]
+        public void TextCoreDynamicFont_ClearsWhenSourceFontCanStillBeFound()
+        {
+            TextCoreFontAsset font = CreateTextCoreFont();
+            ClearSourceFontReference(font);
+            Assert.That(font.sourceFontFile, Is.Null);
+
+            List<string> warnings = SaveFontCollectingWarnings(font);
+
+            Assert.That(warnings, Is.Empty);
+            Assert.That(font.characterTable, Is.Empty);
+            AssertSavedFileHasNoGlyphs(TextCoreFontPath);
+        }
+
+        [Test]
+        public void TextCoreDynamicFont_SaveAssetsLeavesNoGlyphs()
+        {
+            IgnoreUnlessPackageIsEmbedded();
+            TextCoreFontAsset font = CreateTextCoreFont();
+
+            EditorUtility.SetDirty(font);
+            AssetDatabase.SaveAssets();
+
+            Assert.That(font.characterTable, Is.Empty);
+            AssertSavedFileHasNoGlyphs(TextCoreFontPath);
         }
 #else
         [TestCase(TextCoreDynamicDataPersistence.SessionOnly)]
@@ -392,11 +449,51 @@ namespace TarragonFly.DynamicFontCleanup.Editor.Tests
             serializedFont.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        // Clears only the saved reference and keeps the GUID, so the font can still load the .ttf again from it.
+        static void ClearSourceFontReference(Object font)
+        {
+            using SerializedObject serializedFont = new SerializedObject(font);
+            serializedFont.FindProperty("m_SourceFontFile").objectReferenceValue = null;
+            serializedFont.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         // Saves only the test font, so running these inside a game doesn't also save whatever else is dirty there.
         static void SaveFont(Object font)
         {
             EditorUtility.SetDirty(font);
             AssetDatabase.SaveAssetIfDirty(font);
+        }
+
+        static List<string> SaveFontCollectingWarnings(Object font)
+        {
+            List<string> warnings = new List<string>();
+            void CollectWarning(string message, string stackTrace, LogType type)
+            {
+                if (type == LogType.Warning)
+                    warnings.Add(message);
+            }
+
+            Application.logMessageReceived += CollectWarning;
+            try
+            {
+                SaveFont(font);
+            }
+            finally
+            {
+                Application.logMessageReceived -= CollectWarning;
+            }
+
+            return warnings;
+        }
+
+        // File > Save goes through AssetDatabase.SaveAssets, which writes every unsaved asset in the project, so the
+        // SaveAssets tests only run where the package is embedded, like in its own repository. A game that embeds the
+        // package still runs them and gets its other unsaved assets saved along with the test font.
+        static void IgnoreUnlessPackageIsEmbedded()
+        {
+            PackageInfo package = PackageInfo.FindForAssembly(typeof(ClearDynamicFontsOnSave).Assembly);
+            if (package == null || package.source != PackageSource.Embedded)
+                Assert.Ignore("Only runs with the package embedded, since AssetDatabase.SaveAssets would also save the game's other unsaved assets.");
         }
 
         static void AssertSavedFileHasGlyphs(string path)
