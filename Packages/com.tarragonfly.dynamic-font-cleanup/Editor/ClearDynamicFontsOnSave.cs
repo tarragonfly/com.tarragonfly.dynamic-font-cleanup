@@ -68,8 +68,9 @@ namespace TarragonFly.DynamicFontCleanup
             if (typeof(TMP_FontAsset).IsAssignableFrom(assetType))
                 return true;
 
-#if UNITY_6000_7_OR_NEWER
-            // Unity 6.7 clears TextCore fonts on save by itself, going by each font's Dynamic Data Persistence setting.
+#if TEXTCORE_DYNAMIC_DATA_PERSISTENCE
+            // From 6000.7.0b6 Unity clears TextCore fonts on save by itself, going by each font's Dynamic Data Persistence
+            // setting. Earlier 6.7 betas don't, so they're still handled here.
             return false;
 #else
             return typeof(TextCoreFontAsset).IsAssignableFrom(assetType);
@@ -113,11 +114,11 @@ namespace TarragonFly.DynamicFontCleanup
 
         // Unity 6.5 and 6.6 save a TextCore font by themselves whenever it gets a new atlas page. Clearing it in that save
         // makes the open UI fill it again, which adds the page again and saves again, every few frames. Those saves are
-        // skipped instead, so the glyphs stay in memory until the next real save clears them. Unity 6.7 stopped saving there,
-        // so this can go once the package drops 6.5 and 6.6.
+        // skipped instead, so the glyphs stay in memory until the next real save clears them. Unity stopped saving there in
+        // 6000.7.0b6, so this can go once the package drops 6.5, 6.6 and the early 6.7 betas.
         static bool IsTextCoreAtlasPageSave(Object fontAsset)
         {
-#if UNITY_6000_5_OR_NEWER && !UNITY_6000_7_OR_NEWER
+#if UNITY_6000_5_OR_NEWER && !TEXTCORE_DYNAMIC_DATA_PERSISTENCE
             return fontAsset is TextCoreFontAsset && new StackTrace().ToString().Contains("TextEditorResourceManager.DoPostRenderUpdates");
 #else
             return false;
